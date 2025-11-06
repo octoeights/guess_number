@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zgadnij liczbę!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="game-box">
+        <h1>🎯 Zgadnij liczbę od 1 do 100</h1>
+        <input type="number" id="guess" placeholder="Wpisz liczbę">
+        <button id="sendBtn">Zgadnij</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const button = document.getElementById("sendBtn");
+            const resultBox = document.getElementById("result");
+            const input = document.getElementById("guess");
+
+            async function sendGuess() {
+                const guess = input.value;
+                if (!guess) {
+                    resultBox.innerText = "Podaj liczbę!";
+                    resultBox.classList.add("show");
+                    return;
+                }
+
+                const response = await fetch("/guess", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({guess})
+                });
+
+                const data = await response.json();
+                resultBox.innerText = data.result;
+                resultBox.classList.add("show");
+            }
+
+            button.addEventListener("click", sendGuess);
+
+            // pozwala nacisnąć Enter w polu
+            input.addEventListener("keypress", e => {
+                if (e.key === "Enter") sendGuess();
+            });
+        });
+    </script>
+</body>
+</html>
